@@ -1,2 +1,6 @@
-# MediaController-Driver
-Create your own Media controller with Nodejs !
+# RemoteControler
+## Setup
+`npm install`
+
+#Run
+`node main.js`

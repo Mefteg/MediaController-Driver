@@ -144,15 +144,29 @@ function CreateMenuDeviceList(_ports)
     for (var i=0; i<_ports.length; ++i)
     {
         let port = _ports[i];
+        if (PORT != null)
+        {
+            console.log(PORT);
+        }
         list.push({
             label: port.comName,
             type: 'checkbox',
-            checked: PORT != null && port.comName == PORT.comName,
+            checked: IsCurrentPort(port),
             click() { PlugToPort(port); }
         });
     }
 
     return list;
+}
+
+function IsCurrentPort(_port)
+{
+    if (PORT == null)
+    {
+        return false;
+    }
+
+    return port.comName.indexOf(PORT.comName) > -1|| port.path.indexOf(PORT.comName) > -1;
 }
 
 /**************

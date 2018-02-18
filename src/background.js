@@ -16,10 +16,15 @@ var SerialPort = require('serialport');
 var robotjs = require('robotjs');
 
 const BAUDRATE = 9600;
-const KEYWORD_COM_NAME = 'usbserial';
 const KEYWORD_PLAY = 'PLAY';
 const KEYWORD_PREVIOUS = 'PREVIOUS';
 const KEYWORD_NEXT = 'NEXT';
+const KEYWORD_MODE = 'MODE';
+
+const MODE_COUNT = 2;
+const MODE_PLAYER = 0;
+const MODE_VOLUME = 1;
+var CURRENT_MODE = 0;
 
 const REFRESH_RATE = 5000; // Every 5 seconds.
 
@@ -182,15 +187,6 @@ function ListSerialPorts() {
 
         console.log(ports);
         CreateMenu({ports: ports});
-
-        /*for (var i=0; i<ports.length; ++i) {
-            var port = ports[i];
-            if (port.comName.indexOf(KEYWORD_COM_NAME) > -1)
-            {
-                PlugToPort(port);
-                break;
-            }
-        }*/
     });
 }
 
@@ -234,12 +230,89 @@ function portOnDisconnect(_port) {
 
 function parserOnData(_data) {
     if (_data.indexOf(KEYWORD_PLAY) > -1) {
-        robotjs.keyTap('audio_play');
+        OnActionPlay();
     }
     else if (_data.indexOf(KEYWORD_PREVIOUS) > -1) {
-        robotjs.keyTap('audio_prev');
+        OnActionPrevious();
     }
     else if (_data.indexOf(KEYWORD_NEXT) > -1) {
-        robotjs.keyTap('audio_next');
+        OnActionNext();
     }
+    else if (_data.indexOf(KEYWORD_MODE) > -1) {
+        OnActionMode();
+    }
+}
+
+function OnActionPlay()
+{
+    switch (CURRENT_MODE)
+    {
+        case MODE_PLAYER:
+        {
+            robotjs.keyTap('audio_play');
+            break;
+        }
+
+        case MODE_VOLUME:
+        {
+            robotjs.keyTap('audio_mute');
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+}
+
+function OnActionPrevious()
+{
+    switch (CURRENT_MODE)
+    {
+        case MODE_PLAYER:
+        {
+            robotjs.keyTap('audio_prev');
+            break;
+        }
+
+        case MODE_VOLUME:
+        {
+            robotjs.keyTap('audio_vol_down');
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+}
+
+function OnActionNext()
+{
+    switch (CURRENT_MODE)
+    {
+        case MODE_PLAYER:
+        {
+            robotjs.keyTap('audio_next');
+            break;
+        }
+
+        case MODE_VOLUME:
+        {
+            robotjs.keyTap('audio_vol_up');
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+}
+
+function OnActionMode()
+{
+    CURRENT_MODE = (CURRENT_MODE + 1) % MODE_COUNT;
 }
